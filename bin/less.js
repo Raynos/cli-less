@@ -16,6 +16,10 @@ if (argv.help) {
     fs.createReadStream(loc).pipe(s, {
         end: false
     })
+} else if (argv._[0]) {
+    fs.createReadStream(argv._[0]).pipe(s, {
+        end: false
+    })
 }
 
 function runLess() {

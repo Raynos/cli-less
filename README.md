@@ -14,7 +14,7 @@ unix less in pure node
 
 ## Example
 
-`$ node bin/less.js`
+`$ node bin/less.js <file>`
 
 `h` to show help
 

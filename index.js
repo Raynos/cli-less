@@ -41,7 +41,8 @@ function less(stdin) {
     stream.pipe(through(write))
 
     onKey(stdin, context, {
-        'Ctrl-c|Ctrl-d|q': exit,
+        'Ctrl-c|Ctrl-d': exit,
+        'q': exit,
         'h|H': help,
         'enter|return|e|j': moveForward,
         'Ctrl-N|Ctrl-E|Ctrl-J': moveForward,
@@ -108,6 +109,10 @@ function help(context) {
 
     printFooter(context, 'HELP -- press RETURN for more, ' +
         'or q when done')
+
+    if (context.lines.length > 0) {
+        throw new Error('help only works in empty buffer')
+    }
 
     fs.createReadStream(loc, {
         encoding: 'utf8'
