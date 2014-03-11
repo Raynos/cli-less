@@ -1,0 +1,64 @@
+{
+  "name": "cli-less",
+  "version": "0.1.0",
+  "description": "unix less in pure node",
+  "keywords": [],
+  "author": "Raynos <raynos2@gmail.com>",
+  "repository": "git://github.com/Raynos/cli-less.git",
+  "main": "index",
+  "homepage": "https://github.com/Raynos/cli-less",
+  "contributors": [
+    {
+      "name": "Raynos"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/Raynos/cli-less/issues",
+    "email": "raynos2@gmail.com"
+  },
+  "dependencies": {
+    "process": "~0.6.0",
+    "charm": "~0.2.0",
+    "keypress": "~0.2.1",
+    "minimist": "0.0.8",
+    "ansi-recover": "~1.1.0",
+    "split": "~0.3.0",
+    "through": "~2.3.4",
+    "duplexer": "~0.1.1"
+  },
+  "devDependencies": {
+    "tape": "~1.0.2"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/Raynos/cli-less/raw/master/LICENSE"
+    }
+  ],
+  "scripts": {
+    "test": "node ./test/index.js",
+    "start": "node ./index.js",
+    "watch": "nodemon -w ./index.js index.js",
+    "travis-test": "istanbul cover ./test/index.js && ((cat coverage/lcov.info | coveralls) || exit 0)",
+    "cover": "istanbul cover --report none --print detail ./test/index.js",
+    "view-cover": "istanbul report html && google-chrome ./coverage/index.html",
+    "test-browser": "testem-browser ./test/browser/index.js",
+    "testem": "testem-both -b=./test/browser/index.js"
+  },
+  "testling": {
+    "files": "test/index.js",
+    "browsers": [
+      "ie/8..latest",
+      "firefox/16..latest",
+      "firefox/nightly",
+      "chrome/22..latest",
+      "chrome/canary",
+      "opera/12..latest",
+      "opera/next",
+      "safari/5.1..latest",
+      "ipad/6.0..latest",
+      "iphone/6.0..latest",
+      "android-browser/4.2..latest"
+    ]
+  }
+}
