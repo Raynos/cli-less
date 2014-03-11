@@ -14,11 +14,15 @@ unix less in pure node
 
 ## Example
 
-```js
-var cliLess = require("cli-less")
+`$ node bin/less.js`
 
-// TODO. Show example
-```
+`h` to show help
+
+`ENTER` to jump one line
+
+`space` to jump one window.
+
+Can only jump forward when showing help
 
 ## Installation
 
