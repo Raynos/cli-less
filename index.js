@@ -34,13 +34,14 @@ function less(stdin) {
         lines: [],
         index: 0,
         height: height,
-        width: width
+        width: width,
+        footer: ''
     }
 
     stream.pipe(through(write))
 
     onKey(stdin, context, {
-        'Ctrl-c|Ctrl-d': exit,
+        'Ctrl-c|Ctrl-d|q': exit,
         'h|H': help,
         'enter|return|e|j': moveForward,
         'Ctrl-N|Ctrl-E|Ctrl-J': moveForward,
@@ -78,7 +79,7 @@ function moveForward(context) {
 
 function setIndex(context, index) {
     if (index < 0 || index > context.lines.length) {
-        throw new Error('fuck you')
+        throw new Error('Out of bounds rendering')
     }
 
     var charm = context.charm
