@@ -53,7 +53,9 @@ function main(state, render, target) {
     var terminate = false
     var currentState = state()
 
-    render(target, currentState)
+    process.nextTick(function () {
+        render(target, currentState)
+    })
 
     function markDirty() {
         if (!dirty) {
