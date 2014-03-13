@@ -13,8 +13,8 @@ ansirecover({ cursor: true, mouse: true })
 
 module.exports = less
 
-function less(stdin) {
-    var input = Input(stdin)
+function less(tty) {
+    var input = Input(tty)
     var events = input.events
     var state = State({
         height: process.stdout.rows,
@@ -36,11 +36,11 @@ function less(stdin) {
     }
 
     function exit() {
-        if (typeof process.setRawMode === 'function') {
-            process.setRawMode(false)
+        if (typeof tty.setRawMode === 'function') {
+            tty.setRawMode(false)
         }
 
-        stdin.pause()
+        tty.destroy()
         loop.destroy()
     }
 }
