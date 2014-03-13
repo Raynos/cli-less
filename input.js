@@ -22,8 +22,8 @@ function createInputs(stdin) {
     onKey(stdin, {
         'Ctrl-c|Ctrl-d|q': onExit,
         'h|H': onHelp,
-        'enter|return|e|j|Ctrl-N|Ctrl-E|Ctrl-J': onMoveForward,
-        'y|Ctrl+Y|Ctrl+P|l|Ctrl+K': onMoveBackward,
+        'enter|return|e|j|Ctrl-N|Ctrl-E|Ctrl-J|down': onMoveForward,
+        'y|Ctrl+Y|Ctrl+P|l|Ctrl+K|up': onMoveBackward,
         'space|f|Ctrl-V|Ctrl-F': onMoveForwardPage,
         'b|Ctrl+B': onMoveBackwardPage
     })
