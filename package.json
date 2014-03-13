@@ -32,6 +32,9 @@
     "uuid": "~1.4.1",
     "raf": "0.0.3"
   },
+  "bin": {
+    "nless": "bin/less.js"
+  },
   "devDependencies": {
     "tape": "~1.0.2"
   },

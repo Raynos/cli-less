@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var process = require('process')
 var path = require('path')
 var parseArgs = require('minimist')
