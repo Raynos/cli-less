@@ -23,7 +23,9 @@ function createInputs(stdin) {
         'Ctrl-c|Ctrl-d|q': onExit,
         'h|H': onHelp,
         'enter|return|e|j|Ctrl-N|Ctrl-E|Ctrl-J': onMoveForward,
-        'space|f|Ctrl-V|Ctrl-F': onMoveForwardPage
+        'y|Ctrl+Y|Ctrl+P|l|Ctrl+K': onMoveBackward,
+        'space|f|Ctrl-V|Ctrl-F': onMoveForwardPage,
+        'b|Ctrl+B': onMoveBackwardPage
     })
 
     return { events: events, sinks: sinks }
@@ -42,5 +44,13 @@ function createInputs(stdin) {
 
     function onMoveForwardPage() {
         sinks.moveForwardPage.write(1)
+    }
+
+    function onMoveBackward() {
+        sinks.moveForward.write(-1)
+    }
+
+    function onMoveBackwardPage() {
+        sinks.moveForwardPage.write(-1)
     }
 }
