@@ -6,43 +6,68 @@ module.exports = {
     addLine: addLine,
     moveForward: moveForward,
     moveForwardPage: moveForwardPage,
-    setHelp: setHelp
+    setHelp: setHelp,
+    exit: exit
 }
 
 function addLine(state, line) {
-    state.lines.push(line)
+    state.mainBuffer.lines.push(line)
 }
 
-function moveForward(state) {
-    setIndex(state, state.index() + state.height() - 1)
+function moveForward(state, direction) {
+    var buffer = getBuffer(state)
+    var diff = direction * (state.height() - 1)
+
+    setIndex(state, buffer.index() + diff)
 }
 
-function moveForwardPage(state) {
-    setIndex(state, state.index() + 1)
+function moveForwardPage(state, direction) {
+    setIndex(state, getBuffer(state).index() + direction)
 }
 
-function setIndex(state, index) {
-    var bounded = index
-
-    if (index < 0) {
-        bounded = 0
-    } else if (index > state.lines().length) {
-        bounded = state.lines().length
+function exit(state) {
+    if (state.helpMode()) {
+        state.helpBuffer.index.set(0)
+        return state.helpMode.set(false)
     }
 
-    state.index.set(bounded)
+    state.hardExit.set(true)
 }
 
 function setHelp(state) {
-    state.footer.set('HELP -- press RETURN for more, ' +
-        'or q when done')
+    if (state.helpMode()) {
+        return
+    }
 
-    if (state.lines().length > 0) {
-        throw new Error('help only works in empty buffer')
+    state.helpMode.set(true)
+    var buffer = getBuffer(state)
+
+    buffer.footer.set('HELP -- press RETURN for ' +
+        'more, or q when done')
+
+    if (buffer.lines().length > 0) {
+        return
     }
 
     var loc = path.join(__dirname, 'docs.txt')
     readLines(loc, function (line) {
-        addLine(state,line)
+        buffer.lines.push(line)
     })
+}
+
+function setIndex(state, index) {
+    var bounded = index
+    var buffer = getBuffer(state)
+
+    if (index < 0) {
+        bounded = 0
+    } else if (index > buffer.lines().length) {
+        bounded = buffer.lines().length
+    }
+
+    buffer.index.set(bounded)
+}
+
+function getBuffer(state) {
+    return state.helpMode() ? state.helpBuffer : state.mainBuffer
 }

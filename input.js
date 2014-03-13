@@ -37,10 +37,10 @@ function createInputs(stdin) {
     }
 
     function onMoveForward() {
-        sinks.moveForward.write({})
+        sinks.moveForward.write(1)
     }
 
     function onMoveForwardPage() {
-        sinks.moveForwardPage.write({})
+        sinks.moveForwardPage.write(1)
     }
 }

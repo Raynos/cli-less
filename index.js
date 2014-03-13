@@ -25,10 +25,12 @@ function less(tty) {
     // render initial and render on change
     var loop = main(state, Render, charm)
 
-    events.exit(exit)
+    events.exit(Update.exit.bind(null, state))
     events.moveForward(Update.moveForward.bind(null, state))
     events.moveForwardPage(Update.moveForwardPage.bind(null, state))
     events.help(Update.setHelp.bind(null, state))
+
+    state.hardExit(exit)
 
     return {
         stream: charm,

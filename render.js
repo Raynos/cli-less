@@ -1,23 +1,27 @@
 module.exports = Render
 
 function Render(charm, state) {
+    var buffer = state.helpMode ?
+        state.helpBuffer : state.mainBuffer
+
     charm.push()
     charm.cursor(false)
     for (var i = 0; i < state.height; i++) {
         charm.position(1, i)
         charm.erase('end')
-        charm.write(state.lines[state.index + i] || '')
+        charm.write(buffer.lines[buffer.index + i - 1] || '')
     }
     charm.cursor(true)
     charm.pop()
 
     charm.push()
     charm.position(1, state.height)
+    charm.erase('end')
     charm.foreground('black')
     charm.background('white')
-    charm.write(state.footer)
+    charm.write(buffer.footer)
 
     charm.pop()
-    charm.position(state.footer.length + 1, state.height)
+    charm.position(buffer.footer.length + 1, state.height)
     charm.display('reset')
 }
