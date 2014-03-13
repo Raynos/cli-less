@@ -42,9 +42,14 @@ function less(tty) {
             tty.setRawMode(false)
         }
 
-        charm.reset()
+        // reset charm in win32 but not linux
+        if (process.platform === 'win32') {
+            charm.reset()
+        }
         tty.destroy()
         loop.destroy()
+        console.log('')
+        process.exit()
     }
 }
 
