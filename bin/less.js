@@ -1,30 +1,24 @@
 var process = require('process')
-var fs = require('fs')
 var path = require('path')
 var parseArgs = require('minimist')
 
-var less = require('../index.js')
+var readLines = require('../lib/read-lines.js')
+var LessCLI = require('../index.js')
 
 var argv = parseArgs(process.argv.slice(2))
-
-var s = runLess()
-
+var less = runLess()
 process.stdin.resume()
 
 if (argv.help) {
     var loc = path.join(__dirname, '..', 'docs.txt')
-    fs.createReadStream(loc).pipe(s, {
-        end: false
-    })
+    readLines(loc, less.addLine)
 } else if (argv._[0]) {
-    fs.createReadStream(argv._[0]).pipe(s, {
-        end: false
-    })
+    readLines(loc, less.addLine)
 }
 
 function runLess() {
-    var stream = less(process.stdin)
-    stream.pipe(process.stdout)
+    var less = LessCLI(process.stdin)
+    less.stream.pipe(process.stdout)
 
-    return stream
+    return less
 }

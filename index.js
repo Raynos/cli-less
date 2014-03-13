@@ -1,15 +1,12 @@
 var Charm = require('charm')
 var process = require('process')
-var duplexer = require('duplexer')
 var ansirecover = require('ansi-recover')
-var split = require('split')
-//var encode = require('charm/lib/encode')
-var keypress = require('keypress')
-var fs = require('fs')
-var path = require('path')
-var through = require('through')
+var raf = require('raf').polyfill
 
-var onKey = require('./lib/on-key.js')
+var Input = require('./input.js')
+var State = require('./state.js')
+var Update = require('./update.js')
+var Render = require('./render.js')
 
 // this recovers the terminal on process.exit()
 ansirecover({ cursor: true, mouse: true })
@@ -17,130 +14,75 @@ ansirecover({ cursor: true, mouse: true })
 module.exports = less
 
 function less(stdin) {
-    keypress(stdin)
-
-    if (typeof stdin.setRawMode === 'function') {
-        stdin.setRawMode(true)
-    }
-
+    var input = Input(stdin)
+    var events = input.events
+    var state = State({
+        height: process.stdout.rows,
+        width: process.stdout.columns
+    })
     var charm = Charm()
-    var stream = split()
-    var height = process.stdout.rows || 24
-    var width = process.stdout.columns || 80
-    var context = {
-        charm: charm,
-        stream: stream,
-        stdin: stdin,
-        lines: [],
-        index: 0,
-        height: height,
-        width: width,
-        footer: ''
+
+    // render initial and render on change
+    var loop = main(state, Render, charm)
+
+    events.exit(exit)
+    events.moveForward(Update.moveForward.bind(null, state))
+    events.moveForwardPage(Update.moveForwardPage.bind(null, state))
+    events.help(Update.setHelp.bind(null, state))
+
+    return {
+        stream: charm,
+        addLine: Update.addLine.bind(null, state)
     }
 
-    stream.pipe(through(write))
-
-    onKey(stdin, context, {
-        'Ctrl-c|Ctrl-d': exit,
-        'q': exit,
-        'h|H': help,
-        'enter|return|e|j': moveForward,
-        'Ctrl-N|Ctrl-E|Ctrl-J': moveForward,
-        'space|f': moveForwardPage,
-        'Ctrl-V|Ctrl-F': moveForwardPage,
-        't': function () {
-            // setIndex(context, context.index + 1)
+    function exit() {
+        if (typeof process.setRawMode === 'function') {
+            process.setRawMode(false)
         }
+
+        stdin.pause()
+        loop.destroy()
+    }
+}
+
+function main(state, render, target) {
+    var dirty = false
+    var terminate = false
+    var currentState = state()
+
+    render(target, currentState)
+
+    function markDirty() {
+        if (!dirty) {
+            dirty = true
+        }
+    }
+
+    state(function (state) {
+        markDirty()
+        currentState = state
     })
 
-    return duplexer(stream, charm)
+    raf(redraw)
 
-    function write(line) {
-        context.lines.push(line)
+    return { destroy: destroy }
 
-        var currIndex = context.lines.length - 1
-        if (currIndex < (context.index + height - 1)) {
-            // console.log('line', line.length)
-            // console.log('currIndex', currIndex, index + height)
-            charm.push()
-            charm.position(1, currIndex)
-            charm.write(line + '\n')
-            charm.pop()
+    function destroy() {
+        terminate = true
+    }
+
+    function redraw() {
+        if (terminate) {
+            return
         }
-    }
-}
 
-function moveForwardPage(context) {
-    setIndex(context, context.index + context.height - 1)
-}
-
-function moveForward(context) {
-    setIndex(context, context.index + 1)
-}
-
-function setIndex(context, index) {
-    if (index < 0 || index > context.lines.length) {
-        throw new Error('Out of bounds rendering')
-    }
-
-    var charm = context.charm
-
-    // forward path
-    var diff = index - context.index
-    // diff is positive number
-    if (diff > 0) {
-        charm.push()
-        charm.cursor(false)
-        for (var j = 0; j < context.height; j++) {
-            charm.position(1, j)
-            charm.erase('end')
-            charm.write(context.lines[index + j])
+        if (!dirty) {
+            return raf(redraw)
         }
-        charm.cursor(true)
-        charm.pop()
-        printFooter(context, context.footer)
+
+        render(target, currentState)
+
+        dirty = false
+        raf(redraw)
     }
-
-    context.index = index
-}
-
-function help(context) {
-    var loc = path.join(__dirname, 'docs.txt')
-
-    printFooter(context, 'HELP -- press RETURN for more, ' +
-        'or q when done')
-
-    if (context.lines.length > 0) {
-        throw new Error('help only works in empty buffer')
-    }
-
-    fs.createReadStream(loc, {
-        encoding: 'utf8'
-    }).pipe(context.stream, {
-        end: false
-    })
-}
-
-function exit(context) {
-    var stdin = context.stdin
-    if (typeof stdin.setRawMode === 'function') {
-        stdin.setRawMode(false)
-    }
-    stdin.pause()
-}
-
-function printFooter(context, text) {
-    var charm = context.charm
-
-    context.footer = text
-
-    charm.push()
-    charm.position(1, context.height)
-    charm.foreground('black')
-    charm.background('white')
-    charm.write(text)
-
-    charm.pop()
-    charm.position(text.length + 1, context.height)
-    charm.display('reset')
 }

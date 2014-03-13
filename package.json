@@ -24,7 +24,13 @@
     "ansi-recover": "~1.1.0",
     "split": "~0.3.0",
     "through": "~2.3.4",
-    "duplexer": "~0.1.1"
+    "duplexer": "~0.1.1",
+    "event-sinks": "~1.0.1",
+    "observ-hash": "~1.1.1",
+    "observ-array": "~1.0.3",
+    "observ": "~0.1.5",
+    "uuid": "~1.4.1",
+    "raf": "0.0.3"
   },
   "devDependencies": {
     "tape": "~1.0.2"
