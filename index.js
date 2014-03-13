@@ -42,6 +42,7 @@ function less(tty) {
             tty.setRawMode(false)
         }
 
+        charm.reset()
         tty.destroy()
         loop.destroy()
     }
