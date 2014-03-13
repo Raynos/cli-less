@@ -15,7 +15,7 @@ if (argv.help) {
     var loc = path.join(__dirname, '..', 'docs.txt')
     readLines(loc, less.addLine)
 } else if (argv._[0]) {
-    readLines(loc, less.addLine)
+    readLines(argv._[0], less.addLine)
 }
 
 if (!process.stdin.isTTY) {
