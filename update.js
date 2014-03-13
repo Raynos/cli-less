@@ -15,14 +15,14 @@ function addLine(state, line) {
 }
 
 function moveForward(state, direction) {
+    setIndex(state, getBuffer(state).index() + direction)
+}
+
+function moveForwardPage(state, direction) {
     var buffer = getBuffer(state)
     var diff = direction * (state.height() - 1)
 
     setIndex(state, buffer.index() + diff)
-}
-
-function moveForwardPage(state, direction) {
-    setIndex(state, getBuffer(state).index() + direction)
 }
 
 function exit(state) {
