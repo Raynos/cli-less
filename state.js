@@ -27,7 +27,7 @@ function freshState(opts) {
         mainBuffer: ObservHash({
             index: Observ(opts.index || 0),
             lines: ObservArray(opts.lines || []),
-            footer: Observ(opts.footer || '')
+            footer: Observ(opts.footer || '(END)')
         }),
         helpBuffer: ObservHash({
             index: Observ(0),
