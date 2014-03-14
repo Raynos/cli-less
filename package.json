@@ -31,7 +31,7 @@
     "observ": "~0.1.5",
     "uuid": "~1.4.1",
     "raf": "0.0.3",
-    "opentty": "~0.1.1"
+    "opentty": "~0.1.2"
   },
   "bin": {
     "nless": "bin/less.js"
