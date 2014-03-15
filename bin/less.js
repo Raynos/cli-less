@@ -1,15 +1,16 @@
 #!/usr/bin/env node
-
+var openTTY = require('opentty')
 var process = require('process')
 var path = require('path')
 var parseArgs = require('minimist')
 
 var readLines = require('../lib/read-lines.js')
 var LessCLI = require('../index.js')
-var openTTY = require('../lib/open-tty.js')
+
 
 var argv = parseArgs(process.argv.slice(2))
-var less = runLess()
+var inputStream = openTTY()
+var less = runLess(inputStream)
 
 if (argv.help) {
     var loc = path.join(__dirname, '..', 'docs.txt')
@@ -20,16 +21,10 @@ if (argv.help) {
 
 if (!process.stdin.isTTY) {
     readLines(process.stdin, less.addLine)
-    // process.stdin.resume()
 }
 
-function runLess() {
-    var inputStream = process.stdin.isTTY ?
-        process.stdin : openTTY()
+function runLess(inputStream) {
     var less = LessCLI(inputStream)
     less.stream.pipe(process.stdout)
-
-    inputStream.resume()
-
     return less
 }

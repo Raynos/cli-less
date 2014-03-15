@@ -15,10 +15,6 @@ function createInputs(stdin) {
     ])
     var sinks = events.sinks
 
-    if (typeof stdin.setRawMode === 'function') {
-        stdin.setRawMode(true)
-    }
-
     onKey(stdin, {
         'Ctrl-c|Ctrl-d|q': onExit,
         'h|H': onHelp,
