@@ -2,7 +2,7 @@ var Charm = require('charm')
 var process = require('process')
 var ansirecover = require('ansi-recover')
 var raf = require('raf').polyfill
-var restoreTTY = require("./lib/restoretty")
+var restoreTTY = require('restoretty')
 
 var Input = require('./input.js')
 var State = require('./state.js')
