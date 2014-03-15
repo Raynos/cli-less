@@ -31,7 +31,7 @@
     "observ": "~0.1.5",
     "uuid": "~1.4.1",
     "raf": "0.0.3",
-    "opentty": "~0.1.6",
+    "opentty": "~0.1.8",
     "restoretty": "~0.1.0"
   },
   "bin": {
