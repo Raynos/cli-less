@@ -2,6 +2,7 @@ var Charm = require('charm')
 var process = require('process')
 var ansirecover = require('ansi-recover')
 var raf = require('raf').polyfill
+var restoreTTY = require("./lib/restoretty")
 
 var Input = require('./input.js')
 var State = require('./state.js')
@@ -38,17 +39,8 @@ function less(tty) {
     }
 
     function exit() {
-        if (typeof tty.setRawMode === 'function') {
-            tty.setRawMode(false)
-        }
-
-        // reset charm in win32 but not linux
-        if (process.platform === 'win32') {
-            charm.reset()
-        }
-        tty.destroy()
         loop.destroy()
-        console.log('')
+        restoreTTY()
         process.exit()
     }
 }
