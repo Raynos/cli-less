@@ -40,6 +40,9 @@ function less(tty) {
 
     function exit() {
         loop.destroy()
+        if (process.platform === 'win32') {
+            charm.reset()
+        }
         restoreTTY()
         process.exit()
     }
