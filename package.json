@@ -33,7 +33,9 @@
     "raf": "0.0.3",
     "opentty": "~0.1.8",
     "restoretty": "~0.1.0",
-    "xtend": "~2.1.1"
+    "xtend": "~2.1.1",
+    "virtual-dom": "git://github.com/Matt-Esch/virtual-dom",
+    "semver": "~2.2.1"
   },
   "bin": {
     "nless": "bin/less.js"

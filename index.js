@@ -3,8 +3,9 @@ var process = require('process')
 var ansirecover = require('ansi-recover')
 var extend = require('xtend/mutable')
 var EventEmitter = require('events').EventEmitter
-var raf = require('raf').polyfill
 
+var render = require('./lib/charm-render.js')
+var main = require('./lib/main.js')
 var Input = require('./input.js')
 var State = require('./state.js')
 var Update = require('./update.js')
@@ -15,19 +16,40 @@ ansirecover({ cursor: true, mouse: true })
 
 module.exports = createLess
 
-function createLess(readStrean) {
-    var input = Input(readStrean)
-    var events = input.events
+function createLess(readStream) {
+    var input = Input(readStream)
     var state = State({
         height: process.stdout.rows,
         width: process.stdout.columns
     })
     var charm = Charm()
+    var less = wireUpEvents(state, input.events)
+
+    // allow charm to be piped somewhere before we start
+    // rendering to it
+    process.nextTick(function () {
+        // wire up state (from update) to Render
+        var loop = main(state(), Render, {
+            charm: charm,
+            render: render,
+            renderOnly: true
+        })
+
+        state(function (newState) {
+            loop.update(newState)
+        })
+    })
+
+    return extend(less, {
+        charm: charm,
+        addLine: Update.addLine.bind(null, state)
+    })
+}
+
+function wireUpEvents(state, events) {
     var less = new EventEmitter()
 
-    // render initial and render on change
-    var loop = main(state, Render, charm)
-
+    // wire up input to update
     events.exit(Update.exit.bind(null, state))
     events.moveForward(Update.moveForward.bind(null, state))
     events.moveForwardPage(Update.moveForwardPage.bind(null, state))
@@ -35,71 +57,9 @@ function createLess(readStrean) {
 
     state.hardExit(exit)
 
-    less.stream = charm
-    less.addLine = Update.addLine.bind(null, state)
-
-    return extend(less, {
-        stream: charm,
-        addLine: Update.addLine.bind(null, state),
-        destroy: destroy
-    })
-
-    // reset charm in win32 but not linux
-    // the ansirecover full screen mode hack only
-    // works in linux, so dont need to reset linux
-    function destroy() {
-        if (process.platform === 'win32') {
-            charm.reset()
-        }
-
-        loop.destroy()
-    }
+    return less
 
     function exit() {
         less.emit('exit')
-    }
-}
-
-function main(state, render, target) {
-    var dirty = false
-    var terminate = false
-    var currentState = state()
-
-    process.nextTick(function () {
-        render(target, currentState)
-    })
-
-    function markDirty() {
-        if (!dirty) {
-            dirty = true
-        }
-    }
-
-    state(function (state) {
-        markDirty()
-        currentState = state
-    })
-
-    raf(redraw)
-
-    return { destroy: destroy }
-
-    function destroy() {
-        terminate = true
-    }
-
-    function redraw() {
-        if (terminate) {
-            return
-        }
-
-        if (!dirty) {
-            return raf(redraw)
-        }
-
-        render(target, currentState)
-
-        dirty = false
-        raf(redraw)
     }
 }

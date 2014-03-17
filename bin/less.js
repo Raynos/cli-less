@@ -9,30 +9,44 @@ var restoretty = require('restoretty')
 var readLines = require('../lib/read-lines.js')
 var LessCLI = require('../index.js')
 
-var argv = parseArgs(process.argv.slice(2))
-var less = runLess()
+module.exports = runLess
 
-if (argv.help) {
-    var loc = path.join(__dirname, '..', 'docs.txt')
-    readLines(loc, less.addLine)
-} else if (argv._[0]) {
-    readLines(argv._[0], less.addLine)
+if (require.main === module) {
+    main(parseArgs(process.argv.slice(2)))
 }
 
-if (!process.stdin.isTTY) {
-    readLines(process.stdin, less.addLine)
+function main(argv) {
+    var less = runLess()
+
+    if (argv.help) {
+        var loc = path.join(__dirname, '..', 'docs.txt')
+        readLines(loc, less.addLine)
+    } else if (argv._[0]) {
+        readLines(argv._[0], less.addLine)
+    }
+
+    if (!process.stdin.isTTY) {
+        readLines(process.stdin, less.addLine)
+    }
 }
 
 function runLess() {
     var inputStream = opentty()
     var less = LessCLI(inputStream)
-    less.stream.pipe(process.stdout)
+    less.charm.pipe(process.stdout)
 
     less.once('exit', function () {
-        less.destroy()
+        // reset charm in win32 but not linux
+        // the ansirecover full screen mode hack only
+        // works in linux, so dont need to reset linux
+        if (process.platform === 'win32') {
+            less.charm.reset()
+        }
+
         console.log('')
         restoretty()
-        process.exit()
+
+        process.exit();
     })
 
     return less
