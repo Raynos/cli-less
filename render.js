@@ -62,12 +62,22 @@ function footer(buffer, footerLoc) {
 }
 
 function textLines(state, buffer) {
-    var index = buffer.index
-    var lines = buffer.lines.slice(index, index + state.height - 1)
+    var offset = buffer.index
 
-    return lines.map(function (text, index) {
-        return h('line', {
-            x: 1, y: index
-        }, text || '')
+    return range(state.height + 1).map(function (index) {
+        if (index === 0 || index === state.height) {
+            return h('line', { x: 1, y: index }, '')
+        } else {
+            var text = buffer.lines[offset + index - 1] || ''
+            return h('line', { x: 1, y: index }, text)
+        }
     })
+}
+
+function range(end) {
+    var arr = []
+    for (var i = 0; i < end; i++) {
+        arr[i] = i;
+    }
+    return arr
 }
