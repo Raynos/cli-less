@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var ansirecover = require('ansi-recover')
 var process = require('process')
 var path = require('path')
 var parseArgs = require('minimist')
@@ -31,6 +32,9 @@ function main(argv) {
 }
 
 function runLess() {
+    // this recovers the terminal on process.exit()
+    ansirecover({ cursor: true, mouse: true })
+
     var inputStream = opentty()
     var less = LessCLI(inputStream)
     less.charm.pipe(process.stdout)
@@ -46,7 +50,10 @@ function runLess() {
         console.log('')
         restoretty()
 
-        process.exit();
+        // delayed exit otherwise ansirecover doesn't work
+        setTimeout(function () {
+            process.exit();
+        }, 5)
     })
 
     return less

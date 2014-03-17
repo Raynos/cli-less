@@ -1,6 +1,5 @@
 var Charm = require('charm')
 var process = require('process')
-var ansirecover = require('ansi-recover')
 var extend = require('xtend/mutable')
 var EventEmitter = require('events').EventEmitter
 
@@ -10,9 +9,6 @@ var Input = require('./input.js')
 var State = require('./state.js')
 var Update = require('./update.js')
 var Render = require('./render.js')
-
-// this recovers the terminal on process.exit()
-ansirecover({ cursor: true, mouse: true })
 
 module.exports = createLess
 
