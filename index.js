@@ -1,6 +1,8 @@
 var Charm = require('charm')
 var process = require('process')
 var ansirecover = require('ansi-recover')
+var extend = require('xtend/mutable')
+var EventEmitter = require('events').EventEmitter
 var raf = require('raf').polyfill
 
 var Input = require('./input.js')
@@ -11,16 +13,17 @@ var Render = require('./render.js')
 // this recovers the terminal on process.exit()
 ansirecover({ cursor: true, mouse: true })
 
-module.exports = less
+module.exports = createLess
 
-function less(tty) {
-    var input = Input(tty)
+function createLess(readStrean) {
+    var input = Input(readStrean)
     var events = input.events
     var state = State({
         height: process.stdout.rows,
         width: process.stdout.columns
     })
     var charm = Charm()
+    var less = new EventEmitter()
 
     // render initial and render on change
     var loop = main(state, Render, charm)
@@ -32,24 +35,28 @@ function less(tty) {
 
     state.hardExit(exit)
 
-    return {
+    less.stream = charm
+    less.addLine = Update.addLine.bind(null, state)
+
+    return extend(less, {
         stream: charm,
-        addLine: Update.addLine.bind(null, state)
-    }
+        addLine: Update.addLine.bind(null, state),
+        destroy: destroy
+    })
 
-    function exit() {
-        if (typeof tty.setRawMode === 'function') {
-            tty.setRawMode(false)
-        }
-
-        // reset charm in win32 but not linux
+    // reset charm in win32 but not linux
+    // the ansirecover full screen mode hack only
+    // works in linux, so dont need to reset linux
+    function destroy() {
         if (process.platform === 'win32') {
             charm.reset()
         }
-        tty.destroy()
+
         loop.destroy()
-        console.log('')
-        process.exit()
+    }
+
+    function exit() {
+        less.emit('exit')
     }
 }
 

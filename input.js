@@ -9,17 +9,13 @@ var onKey = require('./lib/on-key.js')
 */
 module.exports = createInputs
 
-function createInputs(stdin) {
+function createInputs(readStream) {
     var events = EventSinks(uuid(), [
         'exit', 'help', 'moveForward', 'moveForwardPage'
     ])
     var sinks = events.sinks
 
-    if (typeof stdin.setRawMode === 'function') {
-        stdin.setRawMode(true)
-    }
-
-    onKey(stdin, {
+    onKey(readStream, {
         'Ctrl-c|Ctrl-d|q': onExit,
         'h|H': onHelp,
         'enter|return|e|j|Ctrl-N|Ctrl-E|Ctrl-J|down': onMoveForward,
