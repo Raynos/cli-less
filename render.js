@@ -5,8 +5,10 @@ module.exports = Render
 function Render(state) {
     var buffer = state.helpMode ?
         state.helpBuffer : state.mainBuffer
-    var footerLoc = buffer.lines.length < state.height ?
-        buffer.lines.length : state.height
+
+    var footerLoc = buffer.lines.length - buffer.index
+    footerLoc = footerLoc < state.height ?
+        footerLoc : state.height
 
     return h('screen', [
         h('section', textLines(state, buffer)),
