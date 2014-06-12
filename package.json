@@ -17,25 +17,25 @@
     "email": "raynos2@gmail.com"
   },
   "dependencies": {
-    "process": "~0.6.0",
-    "charm": "~0.2.0",
-    "keypress": "~0.2.1",
-    "minimist": "0.0.8",
     "ansi-recover": "~1.1.0",
-    "split": "~0.3.0",
-    "through": "~2.3.4",
+    "charm": "~0.2.0",
     "duplexer": "~0.1.1",
     "event-sinks": "~1.0.1",
-    "observ-hash": "~1.1.1",
-    "observ-array": "~1.0.3",
+    "keypress": "~0.2.1",
+    "minimist": "0.0.8",
     "observ": "~0.1.5",
-    "uuid": "~1.4.1",
-    "raf": "0.0.3",
+    "observ-array": "~1.0.3",
+    "observ-hash": "~1.1.1",
     "opentty": "~0.1.8",
+    "process": "~0.6.0",
+    "raf": "0.0.3",
     "restoretty": "~0.1.0",
-    "xtend": "~2.1.1",
-    "virtual-dom": "git://github.com/Matt-Esch/virtual-dom",
-    "semver": "~2.2.1"
+    "semver": "~2.2.1",
+    "split": "~0.3.0",
+    "through": "~2.3.4",
+    "uuid": "~1.4.1",
+    "virtual-dom": "0.0.12",
+    "xtend": "~2.1.1"
   },
   "bin": {
     "nless": "bin/less.js"
