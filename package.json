@@ -1,6 +1,6 @@
 {
   "name": "cli-less",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "unix less in pure node",
   "keywords": [],
   "author": "Raynos <raynos2@gmail.com>",
